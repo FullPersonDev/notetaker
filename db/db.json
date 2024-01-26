@@ -1,6 +1,10 @@
 [
     {
-        "title":"Test Title",
-        "text":"Test text"
+        "title":"Eat Breakfast",
+        "text":"cook eggs with toast"
+    },
+    {
+        "title":"Go to Gym",
+        "text":"cardio and weight lifting"
     }
 ]
