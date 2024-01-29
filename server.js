@@ -3,11 +3,11 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
-const database = require('./db/db.json');
+const databasePath = path.join(__dirname, 'db', 'db.json');
 const { stringify } = require('querystring');
 
 // Create Port
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 // Create app
 const app = express();
 
@@ -28,10 +28,39 @@ app.get('/notes', (req, res) => {
 
 // Set routes for get and post apis to the DB
 app.get('/api/notes', (req, res) => {
-    res.json(database);
+    //Read data from db.json and send it as the response
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Internal Server Error');
+        }
+        const notes = JSON.parse(data);
+        res.json(notes);
+    });
 });
 app.post('/api/notes', (req, res) => {
-    res.json(database);
+    // Read existing notes from db.json
+    fs.readFile(databasePath, 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Internal Server Error');
+        }
+        const notes = JSON.parse(data);
+
+        // Add the new note to the notes array
+        const newNote = req.body;
+        notes.push(newNote);
+
+        // Save the updated notes array back to db.json
+        fs.writeFile(databasePath, JSON.stringify(notes), (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Internal Server Error');
+            }
+            // Send the updated notes array as the response
+            res.json(notes);
+        });
+    });
 });
 
 // Create app listner
